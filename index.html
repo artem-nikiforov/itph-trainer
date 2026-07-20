@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru" data-audience="ms" data-direction="lyudi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Интерактивный тренажёр для менеджеров смены: расчёт ITPH, диагностика смены и выбор управленческого действия.">
+  <title>Тренажёр «Работа с ITPH»</title>
+  <link rel="stylesheet" href="css/kuds.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <symbol id="i-home" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .7-1.5l7-6a2 2 0 0 1 2.6 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+        <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+        <symbol id="i-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+        <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="i-x-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+        <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+        <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5A5 5 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+        <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.7 18-8-14a2 2 0 0 0-3.5 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+        <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M10 14.7v1.6a2 2 0 0 1-1 1.7A5 5 0 0 0 7 22"/><path d="M14 14.7v1.6a2 2 0 0 0 1 1.7 5 5 0 0 1 2 4"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></symbol>
+      </g>
+    </defs>
+  </svg>
+
+  <header class="ku-topbar">
+    <div class="ku-topbar__inner">
+      <button class="ku-btn ghost icon-only" type="button" onclick="kuNavigate('home')" aria-label="На главную">
+        <svg class="ku-ico"><use href="#i-home"/></svg>
+      </button>
+      <span class="ku-topbar__brand">ITPH</span>
+      <span class="ku-topbar__title" id="ku-course-title"></span>
+      <span class="ku-progress__count" id="ku-course-count"></span>
+    </div>
+    <div class="ku-progress"><div class="ku-progress__bar" id="ku-course-bar"></div></div>
+  </header>
+
+  <main class="course-main" data-ku-course data-chapters="calc,situations,finish">
+    <div class="ku-page active" id="ku-page-home">
+      <section class="course-cover">
+        <span class="ku-bk-logo" role="img" aria-label="Burger King"></span>
+        <div class="ku-wrap">
+          <div class="ku-hero-row">
+            <div class="course-cover-copy ku-reveal">
+              <div class="course-cover-tags">
+                <span class="ku-badge solid">Обучение МС</span>
+                <span class="ku-badge neutral">Люди</span>
+              </div>
+              <div class="ku-space m"></div>
+              <h1 class="ku-display">Тренажёр<br>«Работа с ITPH»</h1>
+              <div class="ku-space s"></div>
+              <p class="ku-lead">Потренируйся считать нагрузку, замечать риск не только по цифре и выбирать первое действие в смене.</p>
+              <div class="ku-space m"></div>
+              <div class="course-cover-meta">
+                <span><svg class="ku-ico s"><use href="#i-clock"/></svg> до 10 минут</span>
+                <span><svg class="ku-ico s"><use href="#i-target"/></svg> 2 тренажёра</span>
+              </div>
+              <div class="ku-space m"></div>
+              <button class="ku-btn primary l" type="button" onclick="startCourse()">Начать тренировку <svg class="ku-ico arrow"><use href="#i-right"/></svg></button>
+            </div>
+            <img class="ku-hero-img" data-ku-hero alt="Менеджер смены наблюдает за работой команды в ресторане" hidden>
+          </div>
+        </div>
+      </section>
+
+      <section class="course-section" id="chapters">
+        <div class="ku-wrap">
+          <div class="course-heading ku-reveal">
+            <span class="ku-eyebrow">Маршрут тренировки</span>
+            <div class="ku-space s"></div>
+            <h2 class="ku-h1">От расчёта — к решению в смене</h2>
+            <p class="ku-soft">Следующая глава откроется, когда ты справишься с текущей ситуацией.</p>
+          </div>
+          <div class="ku-grid cols-3 gap-m course-home-grid">
+            <button class="ku-card ku-chapter course-chapter" id="ku-home-card-1" type="button" onclick="kuNavigate('calc')">
+              <span class="ku-lock-badge"><svg class="ku-ico s"><use href="#i-lock"/></svg></span>
+              <div class="ku-chapter__num">1</div><div class="ku-chapter__body"><h3>Посчитать ITPH</h3><p>4 минуты · три периода</p></div>
+            </button>
+            <button class="ku-card ku-chapter course-chapter locked" id="ku-home-card-2" type="button" onclick="kuNavigate('situations')">
+              <span class="ku-lock-badge"><svg class="ku-ico s"><use href="#i-lock"/></svg></span>
+              <div class="ku-chapter__num">2</div><div class="ku-chapter__body"><h3>Разобрать ситуации</h3><p>4 минуты · три решения</p></div>
+            </button>
+            <button class="ku-card ku-chapter course-chapter locked" id="ku-home-card-3" type="button" onclick="kuNavigate('finish')">
+              <span class="ku-lock-badge"><svg class="ku-ico s"><use href="#i-lock"/></svg></span>
+              <div class="ku-chapter__num">3</div><div class="ku-chapter__body"><h3>Забрать алгоритм</h3><p>1 минута · завершение</p></div>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="ku-page" id="ku-page-calc">
+      <section class="course-page-hero">
+        <div class="ku-wrap course-narrow">
+          <button class="ku-btn ghost course-back" type="button" onclick="kuNavigate('home')"><svg class="ku-ico"><use href="#i-left"/></svg> К маршруту</button>
+          <p class="course-page-num">Тренажёр 1 из 2</p>
+          <h1 class="ku-h1">Посчитай ITPH<br>на каждый период</h1>
+          <p class="ku-lead">Для каждого периода раздели позиции в чеках на человеко‑часы и обязательно запиши логику расчёта.</p>
+        </div>
+      </section>
+      <section class="course-section">
+        <div class="ku-wrap course-narrow ku-stack l">
+          <div class="formula-card ku-reveal">
+            <div class="formula-part"><span><strong>Проданные позиции</strong>чеки × позиций в чеке</span></div>
+            <span class="formula-op">÷</span>
+            <div class="formula-part"><span><strong>Человеко‑часы</strong>люди × часы</span></div>
+            <span class="formula-op">=</span>
+            <div class="formula-part"><span><strong>ITPH</strong>нагрузка на человека</span></div>
+          </div>
+
+          <div class="ku-exercise ku-reveal" style="--d:1">
+            <div class="ku-exercise__label"><svg class="ku-ico s"><use href="#i-target"/></svg> Расчёт по периодам</div>
+            <p class="ku-quiz-q__text">Заполни правую колонку. Одной цифры недостаточно — покажи, как ты её получил.</p>
+            <div class="ku-space s"></div>
+            <div class="ku-scroll-x">
+              <div class="period-table" role="table" aria-label="Расчёт ITPH по периодам">
+                <div class="period-table__head" role="row">
+                  <div role="columnheader">Позиции в чеках</div>
+                  <div role="columnheader">Человеко‑часы</div>
+                  <div role="columnheader">Твой ITPH и логика</div>
+                </div>
+                <div class="period-row" role="row" data-positions="84" data-hours="3.5" data-answer="24">
+                  <div class="period-source" role="cell"><span class="ku-badge neutral">12:00–12:30</span><strong>84 позиции</strong></div>
+                  <div class="period-source" role="cell"><strong>3,5</strong><span>чел.-ч.</span></div>
+                  <div class="period-answer" role="cell">
+                    <label>ITPH<input class="period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 12:00–12:30" placeholder="число"></label>
+                    <label>Логика<textarea class="period-logic" rows="2" aria-label="Логика расчёта за период 12:00–12:30" placeholder="Например: 84 ÷ 3,5 = …"></textarea></label>
+                  </div>
+                </div>
+                <div class="period-row" role="row" data-positions="112" data-hours="4" data-answer="28">
+                  <div class="period-source" role="cell"><span class="ku-badge neutral">12:30–13:00</span><strong>112 позиций</strong></div>
+                  <div class="period-source" role="cell"><strong>4</strong><span>чел.-ч.</span></div>
+                  <div class="period-answer" role="cell">
+                    <label>ITPH<input class="period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 12:30–13:00" placeholder="число"></label>
+                    <label>Логика<textarea class="period-logic" rows="2" aria-label="Логика расчёта за период 12:30–13:00" placeholder="Например: 112 ÷ 4 = …"></textarea></label>
+                  </div>
+                </div>
+                <div class="period-row" role="row" data-positions="99" data-hours="3" data-answer="33">
+                  <div class="period-source" role="cell"><span class="ku-badge neutral">13:00–13:30</span><strong>99 позиций</strong></div>
+                  <div class="period-source" role="cell"><strong>3</strong><span>чел.-ч.</span></div>
+                  <div class="period-answer" role="cell">
+                    <label>ITPH<input class="period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 13:00–13:30" placeholder="число"></label>
+                    <label>Логика<textarea class="period-logic" rows="2" aria-label="Логика расчёта за период 13:00–13:30" placeholder="Например: 99 ÷ 3 = …"></textarea></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ku-space s"></div>
+            <button class="ku-btn secondary" type="button" onclick="checkPeriodCalculations()">Проверить расчёты</button>
+            <div class="ku-feedback" id="calc-feedback" aria-live="polite"></div>
+          </div>
+
+          <div class="ku-callout ku-reveal" style="--d:2">
+            <span class="ku-callout__icon"><svg class="ku-ico l"><use href="#i-bulb"/></svg></span>
+            <div><div class="ku-callout__title">Главное</div><p>Считай позиции, а не чеки. И обязательно дели на все человеко‑часы сотрудников за тот же период.</p></div>
+          </div>
+          <div class="course-actions">
+            <span class="ku-small ku-soft">Все три расчёта откроют тренажёр по ситуациям.</span>
+            <button class="ku-btn primary course-next" id="next-calc" type="button" disabled onclick="kuNavigate('situations')">К ситуациям <svg class="ku-ico arrow"><use href="#i-right"/></svg></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="ku-page" id="ku-page-situations">
+      <section class="course-page-hero">
+        <div class="ku-wrap course-narrow">
+          <button class="ku-btn ghost course-back" type="button" onclick="kuNavigate('home')"><svg class="ku-ico"><use href="#i-left"/></svg> К маршруту</button>
+          <p class="course-page-num">Тренажёр 2 из 2</p>
+          <h1 class="ku-h1">Одна цифра.<br>Разные решения.</h1>
+          <p class="ku-lead">Сопоставь ITPH с планом и реальной сменой. Выбери первое действие менеджера в каждой ситуации.</p>
+        </div>
+      </section>
+      <section class="course-section">
+        <div class="ku-wrap course-narrow ku-stack l">
+          <div class="situation-progress ku-reveal">
+            <span>Решено ситуаций</span><strong id="situations-count">0 / 3</strong>
+          </div>
+
+          <article class="ku-exercise situation-card ku-reveal" style="--d:1" data-situation="overload">
+            <div class="ku-exercise__label">Ситуация 1 · Перегрузка</div>
+            <div class="scenario-strip compact">
+              <div class="scenario-metric"><b>36</b><span>ITPH факт</span></div>
+              <div class="scenario-metric"><b>28</b><span>ITPH план</span></div>
+              <div class="scenario-metric"><b>2 периода</b><span>выше плана</span></div>
+              <div class="scenario-metric"><b>до двери</b><span>очередь</span></div>
+            </div>
+            <p class="ku-quiz-q__text">Кухня не успевает, ожидание растёт. Что сделать первым?</p>
+            <div class="ku-choices">
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Подождать ещё один период: высокий ITPH — хороший результат</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="1"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-check"/></svg></span>Поддержать узкое место и скорректировать расстановку</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Попросить всех просто работать быстрее</button>
+            </div>
+            <div class="ku-feedback" id="situation-overload-feedback" aria-live="polite"></div>
+          </article>
+
+          <article class="ku-exercise situation-card ku-reveal" style="--d:2" data-situation="underload">
+            <div class="ku-exercise__label">Ситуация 2 · Нагрузка ниже плана</div>
+            <div class="scenario-strip compact">
+              <div class="scenario-metric"><b>18</b><span>ITPH факт</span></div>
+              <div class="scenario-metric"><b>25</b><span>ITPH план</span></div>
+              <div class="scenario-metric"><b>0</b><span>очередь</span></div>
+              <div class="scenario-metric"><b>3</b><span>сотрудника в опасных зонах</span></div>
+            </div>
+            <p class="ku-quiz-q__text">Поток Гостей ниже прогноза. Как использовать команду?</p>
+            <div class="ku-choices">
+              <button class="ku-choice situation-choice" type="button" data-correct="1"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-check"/></svg></span>Перераспределить сотрудников и дать полезные задачи вне опасных зон</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Создать очередь, работая медленнее</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Ничего не менять: низкий ITPH всегда безопасен</button>
+            </div>
+            <div class="ku-feedback" id="situation-underload-feedback" aria-live="polite"></div>
+          </article>
+
+          <article class="ku-exercise situation-card ku-reveal" style="--d:3" data-situation="quality">
+            <div class="ku-exercise__label">Ситуация 3 · Цифра в норме</div>
+            <div class="scenario-strip compact">
+              <div class="scenario-metric"><b>24</b><span>ITPH факт</span></div>
+              <div class="scenario-metric"><b>24</b><span>ITPH план</span></div>
+              <div class="scenario-metric"><b>небольшая</b><span>очередь</span></div>
+              <div class="scenario-metric"><b>↑</b><span>жалобы на качество</span></div>
+            </div>
+            <p class="ku-quiz-q__text">Нагрузка по плану, но Гости недовольны. Что делать?</p>
+            <div class="ku-choices">
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Не вмешиваться: ITPH совпал с планом</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Снизить ITPH, добавив сотрудников</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="1"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-check"/></svg></span>Проверить приготовление, сборку и соблюдение стандартов</button>
+            </div>
+            <div class="ku-feedback" id="situation-quality-feedback" aria-live="polite"></div>
+          </article>
+
+          <div class="ku-callout warning ku-reveal">
+            <span class="ku-callout__icon"><svg class="ku-ico l"><use href="#i-alert"/></svg></span>
+            <div><div class="ku-callout__title">Не ставь диагноз по одной цифре</div><p>ITPH показывает нагрузку. Решение появляется, когда ты добавляешь план, наблюдение за сотрудниками и опасными зонами и гостевой опыт.</p></div>
+          </div>
+          <div class="course-actions">
+            <span class="ku-small ku-soft">Реши все три ситуации, чтобы открыть итог.</span>
+            <button class="ku-btn primary course-next" id="next-situations" type="button" disabled onclick="kuNavigate('finish')">Забрать алгоритм <svg class="ku-ico arrow"><use href="#i-right"/></svg></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="ku-page" id="ku-page-finish">
+      <section class="course-page-hero">
+        <div class="ku-wrap course-narrow">
+          <button class="ku-btn ghost course-back" type="button" onclick="kuNavigate('home')"><svg class="ku-ico"><use href="#i-left"/></svg> К маршруту</button>
+          <p class="course-page-num">Финиш</p>
+          <h1 class="ku-h1">Смотри. Сопоставляй. Действуй.</h1>
+          <p class="ku-lead">ITPH полезен, когда связывает отчёт с тем, что происходит в смене прямо сейчас.</p>
+        </div>
+      </section>
+      <section class="course-section">
+        <div class="ku-wrap course-narrow ku-stack l">
+          <div class="ku-timeline ku-reveal">
+            <div class="ku-tl-item"><span class="ku-tl-item__dot">1</span><h4>Посчитай</h4><p>Проданные позиции ÷ человеко‑часы сотрудников.</p></div>
+            <div class="ku-tl-item"><span class="ku-tl-item__dot">2</span><h4>Сопоставь</h4><p>План и факт ITPH + сотрудники и опасные зоны + гостевой опыт.</p></div>
+            <div class="ku-tl-item"><span class="ku-tl-item__dot">3</span><h4>Измени причину</h4><p>Помоги узкому месту, скорректируй расстановку, дай понятную обратную связь.</p></div>
+            <div class="ku-tl-item"><span class="ku-tl-item__dot">4</span><h4>Перепроверь</h4><p>Через 30 минут снова посмотри на цифру, очередь и качество.</p></div>
+          </div>
+
+          <div class="ku-callout ku-reveal" style="--d:1">
+            <span class="ku-callout__icon"><svg class="ku-ico l"><use href="#i-bulb"/></svg></span>
+            <div><div class="ku-callout__title">Карманная формула решения</div><p><strong>ITPH показывает нагрузку, но не ставит диагноз.</strong> Решение всегда опирается на цифру, наблюдение за сменой и опыт Гостя.</p></div>
+          </div>
+
+          <div class="course-complete ku-reveal" style="--d:2">
+            <div class="course-complete-icon"><svg class="ku-ico"><use href="#i-trophy"/></svg></div>
+            <h2 class="ku-h2">Тренировка завершена</h2>
+            <p class="ku-soft">Нажми кнопку, чтобы отметить прохождение на этом устройстве.</p>
+            <div class="ku-space m"></div>
+            <button class="ku-btn primary l" id="complete-course" type="button" onclick="completeCourse()">Завершить курс <svg class="ku-ico"><use href="#i-check-c"/></svg></button>
+            <div class="course-complete-state" id="complete-state" aria-live="polite">Готово. Курс отмечен как пройденный.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/kuds.js"></script>
+  <script src="js/course.js"></script>
+</body>
+</html>
