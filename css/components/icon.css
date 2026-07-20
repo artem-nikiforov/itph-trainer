@@ -56,7 +56,7 @@
   width: 3.25em;
   height: 3.25em;
   border-radius: var(--ku-radius-m);
-  background: var(--ku-grad-brand-soft);
+  background: var(--ku-brand-soft);
   color: var(--ku-brand-strong);
   box-shadow: inset 0 0 0 1px var(--ku-border-soft);
   transition: transform var(--ku-dur-base) var(--ku-ease-spring),

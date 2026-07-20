@@ -57,17 +57,40 @@
   --ku-font-display: "Flame", "Golos Text", system-ui, sans-serif;
   --ku-font-body:    "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* Поверхность блоков — всегда белая (крем оставляем только как второй
-     уровень для полос-секций/дорожек прогресса). */
+  /* Фоны — ТОЛЬКО белые (никакого бежевого). Нейтральный светло-серый
+     остаётся исключительно для внутренностей компонентов: дорожек прогресса,
+     подложек переключателей и т.п. */
   --ku-surface:      #ffffff;
-  --ku-surface-2:    var(--ku__cream-100);
+  --ku-surface-2:    #f2f4f6;
+  --ku-divider:      #e9ecef;
 
   --ku-brand:        var(--ku__flame-500);
   --ku-contrast:     var(--ku__ember-500);
   --ku-brand-strong: var(--ku__flame-600);
   --ku-brand-press:  var(--ku__ember-500);
   --ku-grad-brand:   linear-gradient(135deg, var(--ku__flame-400), var(--ku__ember-500));
-  --ku-grad-brand-soft: linear-gradient(135deg, var(--ku__flame-50), var(--ku__cream-200));
+  --ku-grad-brand-soft: #ffffff;   /* обложка в БК-базе — белая */
+}
+
+/* ── Локальные акценты БК-базы ─────────────────────────────────────────
+   Ответ на «в bk-base всё оранжевое»: полная палитра бренда доступна
+   точечно. Повесь класс на карточку/блок — его ветка перекрасится в другой
+   фирменный цвет (ember/sky/green/amber/ink), оттенки выведутся сами.
+   Работает ТОЛЬКО в bk-base: в МС палитру жёстко диктует направление. */
+.ku-tint-ember { --_tint: var(--ku__ember-500); }
+.ku-tint-sky   { --_tint: var(--ku__sky-500); }
+.ku-tint-green { --_tint: var(--ku__green-500); }
+.ku-tint-amber { --_tint: var(--ku__amber-400); }
+.ku-tint-ink   { --_tint: var(--ku__ink-500); }
+
+:root[data-audience="bk-base"] [class*="ku-tint-"] {
+  --ku-brand:        var(--_tint);
+  --ku-brand-strong: color-mix(in srgb, var(--_tint) 78%, #000);
+  --ku-brand-press:  color-mix(in srgb, var(--_tint) 62%, #000);
+  --ku-brand-soft:   color-mix(in srgb, var(--_tint) 12%, var(--ku__white));
+  --ku-brand-ring:   color-mix(in srgb, var(--_tint) 45%, transparent);
+  --ku-shadow-brand: 0 10px 28px color-mix(in srgb, var(--_tint) 35%, transparent);
+  --ku-grad-brand:   linear-gradient(135deg, var(--_tint), color-mix(in srgb, var(--_tint) 70%, #3a1505));
 }
 
 

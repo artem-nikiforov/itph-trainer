@@ -26,7 +26,7 @@
   color: var(--ku-text); text-align: left;
   transition: background-color var(--ku-dur-fast) var(--ku-ease), color var(--ku-dur-fast) var(--ku-ease);
 }
-.ku-acc-q:hover { background: var(--ku-surface); color: var(--ku-brand-strong); }
+.ku-acc-q:hover { background: var(--ku-surface-2); color: var(--ku-brand-strong); }
 .ku-acc-q__icon {
   flex-shrink: 0;
   display: grid; place-items: center;
@@ -110,7 +110,9 @@
 /* ── Цитата с большой кавычкой ───────────────────────────────────────── */
 .ku-quote {
   position: relative;
-  background: var(--ku-surface);
+  background: var(--ku-card);
+  border: 1px solid var(--ku-border-soft);
+  box-shadow: var(--ku-shadow-s);
   border-radius: var(--ku-radius-l);
   padding: var(--ku-space-m) var(--ku-space-m) var(--ku-space-s);
 }

@@ -13,7 +13,7 @@
   border-bottom: 1px solid var(--ku-border-soft);
 }
 .ku-topbar__inner {
-  max-width: 72rem;
+  max-width: 64rem;
   margin-inline: auto;
   padding: 0.7rem var(--ku-space-s);
   display: flex;
@@ -79,7 +79,7 @@
 }
 .ku-audience__btn.is-active {
   color: var(--ku-brand-on);
-  background: var(--ku-grad-brand);
+  background: var(--ku-brand);
   box-shadow: var(--ku-shadow-brand);
 }
 .ku-audience__btn[disabled] {
@@ -114,7 +114,7 @@
   background: color-mix(in srgb, var(--ku-bg) 88%, transparent);
 }
 .ku-ms-bar__inner {
-  max-width: 72rem;
+  max-width: 64rem;
   margin-inline: auto;
   padding: 0.55rem var(--ku-space-s);
   display: flex; align-items: center; gap: var(--ku-gap-m);
@@ -149,7 +149,7 @@
 .ku-dir-btn:hover:not(.is-active) { color: var(--ku-text); transform: translateY(-1px); }
 .ku-dir-btn.is-active {
   color: var(--ku-brand-on);
-  background: var(--ku-grad-brand);
+  background: var(--ku-brand);
   box-shadow: var(--ku-shadow-brand);
 }
 .ku-dir-dot {

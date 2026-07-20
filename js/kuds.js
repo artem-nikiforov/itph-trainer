@@ -60,6 +60,16 @@
   }
 
   function initAudience() {
+    // РЕЖИМ КУРСА: если на странице нет переключателя подразделов, значит
+    // data-audience/data-direction зафиксированы в разметке (<html …>) —
+    // ничего не перезаписываем, только прячем тёмную тему для МС.
+    if (!document.querySelector("[data-audience-btn]")) {
+      if (document.documentElement.getAttribute("data-audience") === "ms") {
+        setThemeToggleEnabled(false);
+      }
+      return;
+    }
+    // РЕЖИМ ВИТРИНЫ: переключатель есть — восстанавливаем выбор.
     let saved = "bk-base";
     try { saved = localStorage.getItem(AUDIENCE_KEY) || "bk-base"; } catch (e) {}
     const btn = document.querySelector('[data-audience-btn="' + saved + '"]');
@@ -86,10 +96,20 @@
     });
   }
   function initTheme() {
+    // РЕЖИМ КУРСА: переключателя темы нет → тема фиксирована разметкой.
+    // Если методист не задал data-theme — всегда светлая (не зависим от
+    // системных настроек ученика: курс в LMS должен выглядеть одинаково).
+    if (!document.querySelector("[data-theme-toggle]")) {
+      const preset = document.documentElement.getAttribute("data-theme");
+      const isMs = document.documentElement.getAttribute("data-audience") === "ms";
+      document.documentElement.setAttribute(
+        "data-theme", isMs ? "light" : (preset || "light"));
+      return;
+    }
+    // РЕЖИМ ВИТРИНЫ: сохранённый выбор или системная тема.
     let mode = null;
     try { mode = localStorage.getItem(THEME_KEY); } catch (e) {}
     if (!mode) mode = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    // при старте в МС тема всегда светлая (выставится в setAudience)
     setTheme(document.documentElement.getAttribute("data-audience") === "ms" ? "light" : mode);
     document.querySelectorAll("[data-theme-toggle]").forEach(b =>
       b.addEventListener("click", () =>
@@ -279,6 +299,10 @@
           if (group && [...group.querySelectorAll(".ku-quiz-q")].every(x => x.classList.contains("solved"))) {
             showFeedback(group.dataset.quizGroup, true);
           }
+          // одиночный вопрос с собственным data-ku-id — тоже прогресс
+          if (!group && window.KU && q.hasAttribute("data-ku-id")) {
+            window.KU.progress.markDone(q.getAttribute("data-ku-id"));
+          }
         }
       } else {
         btn.classList.add("wrong");
@@ -335,9 +359,11 @@
   window.kuNavigate = function (pageId) {
     const target = document.getElementById("ku-page-" + pageId);
     if (!target) return;
-    KU.pages.forEach(id => document.getElementById("ku-page-" + id)?.classList.remove("active"));
+    // деактивируем ВСЕ страницы (включая не перечисленные в главах: finish и т.п.)
+    document.querySelectorAll(".ku-page.active").forEach(p => p.classList.remove("active"));
     target.classList.add("active");
-    const scroller = document.querySelector("[data-ku-course]");
+    const scroller = document.querySelector("[data-ku-chapters]") ||
+                     document.querySelector("[data-ku-course-nav]");
     if (scroller) scroller.scrollIntoView({ behavior: "smooth", block: "start" });
 
     const idx = KU.order.indexOf(pageId);
@@ -349,7 +375,11 @@
       if (countEl) countEl.textContent = (idx + 1) + " / " + KU.order.length;
       if (barEl) barEl.style.width = Math.round(((idx + 1) / KU.order.length) * 100) + "%";
       const next = Math.min(idx + 2, KU.order.length);
-      if (next > KU.unlocked) KU.unlocked = next;
+      if (next > KU.unlocked) {
+        KU.unlocked = next;
+        // сохраняем прогресс глав в SCORM-рантайм (если подключён)
+        if (window.KU) window.KU.progress.setUnlocked(next);
+      }
       applyLocks();
     } else {
       if (countEl) countEl.textContent = "";
@@ -364,13 +394,23 @@
     });
   }
   function initCourse() {
-    const course = document.querySelector("[data-ku-course]");
+    const course = document.querySelector("[data-ku-chapters]") ||
+                   document.querySelector("[data-ku-course-nav]");
     if (!course) return;
-    KU.order = (course.dataset.chapters || "").split(",").filter(Boolean);
+    KU.order = (course.getAttribute("data-ku-chapters") || course.dataset.chapters || "")
+      .split(",").filter(Boolean);
     KU.pages = ["home"].concat(KU.order);
     KU.order.forEach((id, i) => KU.names[id] = "Глава " + (i + 1));
     KU.names.home = "";
     applyLocks();
+    // Восстановление прогресса из SCORM-рантайма: ku-scorm.js стреляет
+    // 'ku:ready' на window load, когда состояние прочитано из LMS/localStorage.
+    document.addEventListener("ku:ready", (e) => {
+      if (e.detail && e.detail.unlocked > KU.unlocked) {
+        KU.unlocked = Math.min(e.detail.unlocked, KU.order.length);
+        applyLocks();
+      }
+    });
   }
 
   /* ══ 11. УТИЛИТЫ + ИНИЦИАЛИЗАЦИЯ ════════════════════════════════════ */
@@ -383,6 +423,12 @@
                    : (badText || "<strong>Не совсем.</strong> Попробуй ещё раз.");
     // сохраняем иконку, если она задана в разметке через data-*, иначе просто текст
     fb.innerHTML = '<span class="ku-fb-msg">' + msg + "</span>";
+    // Прогресс: верный ответ отмечает ближайшее упражнение [data-ku-id]
+    // решённым в SCORM-рантайме (если ku-scorm.js подключён).
+    if (ok && window.KU) {
+      const ex = fb.closest("[data-ku-id]");
+      if (ex) window.KU.progress.markDone(ex.getAttribute("data-ku-id"));
+    }
   }
   window.kuShuffle = function (el) {
     if (!el) return;

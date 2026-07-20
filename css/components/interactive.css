@@ -21,6 +21,20 @@
   margin-bottom: var(--ku-space-2xs);
 }
 
+/* Решённое упражнение: класс .is-done ставит SCORM-рантайм (ku-scorm.js)
+   при верном ответе и при восстановлении прогресса между сессиями.
+   Дефолт — бейдж «Решено» у лейбла; поведение внутри (блокировать ли
+   повторное прохождение) решает разметка конкретного курса. */
+.ku-exercise.is-done .ku-exercise__label::after {
+  content: "✓ решено";
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 0.25em 0.7em;
+  border-radius: var(--ku-radius-pill);
+  background: var(--ku-success-soft);
+  color: var(--ku-success);
+}
+
 /* ── 1. Сортировка списка (перетаскивание по вертикали) ──────────────── */
 .ku-sortable { display: flex; flex-direction: column; gap: 0.6em; }
 .ku-sort-item {
@@ -145,6 +159,31 @@
   20% { transform: translateX(-7px); }
   60% { transform: translateX(7px); }
 }
+
+/* ── 3b. Поля ввода (открытые ответы, расчёты, данные для сводки) ─────
+   Вешай data-ku-var="имя" — значение автосохранится (ku-scorm.js). */
+.ku-input {
+  width: 100%;
+  font-family: var(--ku-font-body);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ku-text);
+  background: var(--ku-card);
+  border: 1.5px solid var(--ku-border);
+  border-radius: var(--ku-radius-m);
+  padding: 0.8em 1em;
+  transition: border-color var(--ku-dur-fast) var(--ku-ease),
+              box-shadow var(--ku-dur-fast) var(--ku-ease);
+  resize: vertical;
+}
+.ku-input::placeholder { color: var(--ku-text-muted); }
+.ku-input:hover { border-color: color-mix(in srgb, var(--ku-brand) 45%, var(--ku-border)); }
+.ku-input:focus {
+  outline: none;
+  border-color: var(--ku-brand);
+  box-shadow: 0 0 0 3px var(--ku-brand-ring);
+}
+.ku-input.num { max-width: 10em; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* ── 4. Блок обратной связи ──────────────────────────────────────────── */
 .ku-feedback {

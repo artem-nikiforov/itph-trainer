@@ -17,7 +17,7 @@
   box-shadow: var(--ku-shadow-s), inset 0 0 0 1.5px var(--ku-brand);
   transition: transform var(--ku-dur-fast) var(--ku-ease-out), background-color var(--ku-dur-fast), color var(--ku-dur-fast);
 }
-.ku-gallery__btn:hover { background: var(--ku-grad-brand); color: var(--ku-brand-on); transform: scale(1.08); box-shadow: var(--ku-shadow-brand); }
+.ku-gallery__btn:hover { background: var(--ku-brand); color: var(--ku-brand-on); transform: scale(1.08); box-shadow: var(--ku-shadow-brand); }
 .ku-gallery__dots { display: flex; gap: 0.5em; }
 .ku-gallery__dot { width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--ku-surface-2); cursor: pointer; transition: all var(--ku-dur-fast) var(--ku-ease); }
 .ku-gallery__dot.active { background: var(--ku-brand); width: 1.5em; border-radius: var(--ku-radius-pill); }
@@ -46,7 +46,7 @@
   position: sticky; top: 0; background: var(--ku-bg);
 }
 .ku-table tbody tr { transition: background-color var(--ku-dur-fast) var(--ku-ease); }
-.ku-table tbody tr:hover { background: var(--ku-surface); }
+.ku-table tbody tr:hover { background: var(--ku-surface-2); }
 .ku-table tbody td { border-bottom: 1px solid var(--ku-border-soft); }
 .ku-table tbody tr:last-child td { border-bottom: none; }
 
@@ -119,6 +119,34 @@
   z-index: 50;
 }
 .ku-tip:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Сводка ответов ([data-ku-report] — рендерит ku-scorm.js) ─────────
+   «Лист наставнику»: пары «подпись → значение» из переменных курса.
+   Размещай на белом surface (как callout). */
+.ku-report {
+  background: var(--ku-card);
+  border: 1px solid var(--ku-border);
+  border-radius: var(--ku-radius-l);
+  padding: var(--ku-space-m);
+  box-shadow: var(--ku-shadow-s);
+}
+.ku-report__row { padding: 0.7em 0; border-bottom: 1px solid var(--ku-border-soft); }
+.ku-report__row:last-child { border-bottom: none; }
+.ku-report__label {
+  font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--ku-text-muted);
+  margin-bottom: 0.25em;
+}
+.ku-report__value { font-size: 0.98rem; line-height: 1.55; white-space: pre-wrap; }
+.ku-report__empty { margin: 0; color: var(--ku-text-muted); font-size: 0.9rem; }
+
+/* Кнопка «Завершить» после срабатывания */
+[data-ku-complete].is-completed {
+  pointer-events: none;
+  background: var(--ku-success);
+  box-shadow: none;
+}
 
 /* ── Swatch-строка палитры (для самой ДС) ────────────────────────────── */
 .ku-swatch { border-radius: var(--ku-radius-m); overflow: hidden; box-shadow: var(--ku-shadow-xs); border: 1px solid var(--ku-border-soft); }

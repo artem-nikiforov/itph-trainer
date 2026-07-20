@@ -5,16 +5,30 @@
    Компоненты остаются «безотступными», а ритм задаёт разметка.
    ════════════════════════════════════════════════════════════════════════ */
 
-/* — Обёртка читаемой колонки — */
+/* — SPA-страницы курса —
+   Курс — один HTML: каждый экран <div class="ku-page" id="ku-page-ИМЯ">,
+   виден только активный (переключает kuNavigate из js/kuds.js). */
+.ku-page { display: none; }
+.ku-page.active { display: block; animation: ku-page-in var(--ku-dur-base) var(--ku-ease-out); }
+@keyframes ku-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* — Обёртка колонки —
+   Дефолт (64rem ≈ 1280px) — для сеток карточек и составных секций.
+   СПЛОШНОЙ ТЕКСТ живёт в .measure (~66–72 знака в строке); впрочем,
+   .ku-prose/.ku-lead ограничивают себя мерой сами (см. typography.css),
+   так что длинных строк не будет даже в широкой обёртке. */
 .ku-wrap {
   width: 100%;
-  max-width: 72rem;
+  max-width: 64rem;
   margin-inline: auto;
   padding-inline: var(--ku-space-s);
 }
 .ku-wrap.narrow  { max-width: 48rem; }
 .ku-wrap.measure { max-width: var(--ku-measure); }
-.ku-wrap.wide    { max-width: 84rem; }
+.ku-wrap.wide    { max-width: 80rem; }
 
 /* — Вертикальный ритм секций — */
 .ku-section { padding-block: var(--ku-space-xl); }

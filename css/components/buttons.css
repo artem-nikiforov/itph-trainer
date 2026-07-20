@@ -50,15 +50,18 @@
   pointer-events: none;
 }
 .ku-btn.primary:hover::after,
-.ku-btn.accent:hover::after { opacity: 1; background-position: -60% 0; }
+.ku-btn.success:hover::after { opacity: 1; background-position: -60% 0; }
 
-/* — Основная (пламя) — */
+/* — Основная — сплошной бренд-цвет (без градиента), при наведении темнее — */
 .ku-btn.primary {
   --_fg: var(--ku-brand-on);
-  background: var(--ku-grad-brand);
+  background: var(--ku-brand);
   box-shadow: var(--ku-shadow-brand);
 }
-.ku-btn.primary:hover { box-shadow: 0 14px 34px color-mix(in srgb, var(--ku-brand) 45%, transparent); }
+.ku-btn.primary:hover {
+  background: var(--ku-brand-strong);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--ku-brand) 45%, transparent);
+}
 
 /* — Вторичная (контур) — */
 .ku-btn.secondary {
@@ -68,27 +71,27 @@
 }
 .ku-btn.secondary:hover { --_bg: var(--ku-brand-soft); }
 
-/* — Мягкая (заливка-«крем») — */
+/* — Мягкая (нейтральная заливка) — */
 .ku-btn.soft {
-  --_bg: var(--ku-surface);
+  --_bg: var(--ku-surface-2);
   --_fg: var(--ku-text);
   box-shadow: var(--ku-shadow-xs);
 }
-.ku-btn.soft:hover { --_bg: var(--ku-surface-2); }
+.ku-btn.soft:hover { --_bg: color-mix(in srgb, var(--ku-text) 8%, var(--ku-surface-2)); }
 
 /* — Тихая (ghost) — */
 .ku-btn.ghost { --_bg: transparent; --_fg: var(--ku-text-soft); }
-.ku-btn.ghost:hover { --_bg: var(--ku-surface); --_fg: var(--ku-text); }
+.ku-btn.ghost:hover { --_bg: var(--ku-surface-2); --_fg: var(--ku-text); }
 
-/* — Успех (для «Проверить») — */
+/* — Успех — сплошной зелёный (семантика «подтвердить/зачтено») — */
 .ku-btn.success {
   --_fg: #fff;
-  background: linear-gradient(135deg, var(--ku__green-500), var(--ku__green-600));
+  background: var(--ku-success);
   box-shadow: 0 8px 22px color-mix(in srgb, var(--ku-success) 32%, transparent);
 }
+.ku-btn.success:hover { background: color-mix(in srgb, var(--ku-success) 80%, #000); }
 
-/* — Размеры — */
-.ku-btn.s  { padding: 0.55em 1.05em; font-size: 0.85rem; border-radius: var(--ku-radius-s); }
+/* — Размеры: базовый и крупный (мелкие кнопки в ДС не используются) — */
 .ku-btn.l  { padding: 1em 2em; font-size: 1.15rem; }
 .ku-btn.block { display: flex; width: 100%; }
 

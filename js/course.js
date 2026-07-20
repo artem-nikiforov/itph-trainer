@@ -36,6 +36,10 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {}
   }
 
+  function markExerciseDone(id) {
+    if (window.KU && window.KU.progress) window.KU.progress.markDone(id);
+  }
+
   function syncUi() {
     chapters.forEach((chapter, index) => {
       const card = document.getElementById("ku-home-card-" + (index + 1));
@@ -122,6 +126,7 @@
 
     if (correctRows === rows.length) {
       showFeedback("calc-feedback", true, "<strong>Все периоды посчитаны верно.</strong> 84 ÷ 3,5 = 24; 112 ÷ 4 = 28; 99 ÷ 3 = 33.");
+      markExerciseDone("calc-periods");
       unlockAfter("calc");
     } else {
       const hint = missingLogic
@@ -162,6 +167,7 @@
     card.classList.add("solved");
     card.querySelectorAll(".situation-choice").forEach(choice => choice.disabled = true);
     button.classList.add("correct");
+    markExerciseDone("situation-" + id);
     showFeedback(feedbackId, true, situationFeedback[id]);
     if (state.situations.length === 3) unlockAfter("situations");
     else {
