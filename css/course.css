@@ -67,7 +67,7 @@ body { min-height: 100vh; background: var(--ku-bg); }
 }
 
 .period-table {
-  min-width: 44rem;
+  min-width: 58rem;
   border: var(--ku-border-w) solid var(--ku-border);
   border-radius: var(--ku-radius-l);
   overflow: hidden;
@@ -76,7 +76,7 @@ body { min-height: 100vh; background: var(--ku-bg); }
 .period-table__head,
 .period-row {
   display: grid;
-  grid-template-columns: 1fr .65fr 2fr;
+  grid-template-columns: 1.35fr .65fr 2fr;
 }
 .period-table__head {
   background: var(--ku-surface-2);
@@ -96,13 +96,22 @@ body { min-height: 100vh; background: var(--ku-bg); }
 .period-source { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: var(--ku-space-2xs); min-width: 0; }
 .period-source strong { color: var(--ku-text); }
 .period-source span:not(.ku-badge) { color: var(--ku-text-soft); font-size: 0.82em; }
-.period-answer { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.7fr); gap: var(--ku-space-xs); min-width: 0; }
+.period-answer { display: grid; grid-template-columns: minmax(0, .55fr) minmax(0, 2.1fr); gap: var(--ku-space-xs); min-width: 0; }
 .period-answer label { display: flex; flex-direction: column; gap: var(--ku-space-3xs); min-width: 0; color: var(--ku-text-soft); font-size: 0.78em; font-weight: 700; }
 .period-answer .ku-input { min-width: 0; max-width: none; font-size: 1em; }
 .period-row.incorrect .period-answer input,
 .period-row.incorrect .period-answer textarea { border-color: var(--ku-danger); }
 .period-row.correct .period-answer input,
 .period-row.correct .period-answer textarea { border-color: var(--ku-success); }
+.period-reference {
+  display: none;
+  grid-column: 1 / -1;
+  border-top: var(--ku-border-w) solid var(--ku-border-soft);
+  background: var(--ku-success-soft);
+  color: var(--ku-text-soft);
+}
+.period-row.correct .period-reference { display: block; }
+.period-reference strong { color: var(--ku-text); }
 
 .scenario-strip {
   display: grid;
@@ -206,9 +215,13 @@ body { min-height: 100vh; background: var(--ku-bg); }
   .period-row > div + div { border-left: var(--ku-border-w) solid var(--ku-border-soft); }
   .period-row > .period-answer {
     grid-column: 1 / -1;
-    grid-template-columns: minmax(0, .7fr) minmax(0, 1.7fr);
+    grid-template-columns: minmax(0, .55fr) minmax(0, 2.1fr);
     border-left: 0;
     border-top: var(--ku-border-w) solid var(--ku-border-soft);
+  }
+  .period-row > .period-reference {
+    grid-column: 1 / -1;
+    border-left: 0;
   }
   #ku-page-calc.active .period-source::before,
   #ku-page-calc.active .period-answer::before {

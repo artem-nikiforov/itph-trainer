@@ -9,7 +9,7 @@
     finish: "Забрать алгоритм"
   };
   const situationFeedback = {
-    overload: "<strong>Верно.</strong> Высокий ITPH вместе с очередью и отставанием кухни указывает на перегрузку. Поддержи узкое место и скорректируй расстановку.",
+    overload: "<strong>Верно.</strong> Высокий ITPH вместе с очередью и отставанием кухни указывает на перегрузку. Определи западающую зону и скорректируй расстановку.",
     underload: "<strong>Верно.</strong> Нагрузка ниже плана и очереди нет. Перераспредели людей и используй освободившееся время с пользой.",
     quality: "<strong>Верно.</strong> Нормальный ITPH не исключает проблем с качеством. Проверь процесс приготовления, сборки и соблюдение стандартов."
   };
@@ -98,40 +98,40 @@
     return Number(String(value).trim().replace(",", "."));
   }
 
-  function logicContains(logic, expected) {
-    const numbers = String(logic).match(/\d+(?:[.,]\d+)?/g) || [];
-    return numbers.map(parseNumber).some(value => Math.abs(value - expected) < 0.01);
-  }
-
   window.checkPeriodCalculations = function () {
     const rows = [...document.querySelectorAll(".period-row")];
     let correctRows = 0;
-    let missingLogic = false;
+    let hasWrongCalculation = false;
+    let hasShortDecision = false;
 
     rows.forEach(row => {
-      const positions = Number(row.dataset.positions);
-      const hours = Number(row.dataset.hours);
       const answer = Number(row.dataset.answer);
       const value = parseNumber(row.querySelector(".period-value").value);
-      const logic = row.querySelector(".period-logic").value;
+      const decision = row.querySelector(".period-logic").value.trim();
       const valueOk = Number.isFinite(value) && Math.abs(value - answer) < 0.01;
-      const logicOk = logicContains(logic, positions) && logicContains(logic, hours) && logicContains(logic, answer);
-      const rowOk = valueOk && logicOk;
+      const decisionReady = decision.length >= 20;
+      const rowOk = valueOk && decisionReady;
 
       row.classList.toggle("correct", rowOk);
       row.classList.toggle("incorrect", !rowOk);
-      if (!logicOk) missingLogic = true;
+      if (!valueOk) hasWrongCalculation = true;
+      if (!decisionReady) hasShortDecision = true;
       if (rowOk) correctRows += 1;
     });
 
     if (correctRows === rows.length) {
-      showFeedback("calc-feedback", true, "<strong>Все периоды посчитаны верно.</strong> 84 ÷ 3,5 = 24; 112 ÷ 4 = 28; 99 ÷ 3 = 33.");
+      showFeedback("calc-feedback", true, "<strong>Все расчёты верны.</strong> Сравни свои выводы с ориентирами в строках. Формулировки не оцениваются автоматически.");
       markExerciseDone("calc-periods");
       unlockAfter("calc");
     } else {
-      const hint = missingLogic
-        ? "В каждой отмеченной строке проверь и число, и запись логики: позиции ÷ человеко‑часы = ITPH."
-        : "Проверь деление позиций на человеко‑часы в отмеченных строках.";
+      let hint = "";
+      if (hasWrongCalculation && hasShortDecision) {
+        hint = "Проверь деление проданных позиций на человеко‑часы. Затем напиши, что результат значит относительно плана и какое действие предпримешь первым.";
+      } else if (hasWrongCalculation) {
+        hint = "Проверь деление проданных позиций на человеко‑часы в отмеченных строках.";
+      } else {
+        hint = "В каждой отмеченной строке напиши две части: что результат значит относительно плана и какое действие предпримешь первым. Формулировка не оценивается автоматически.";
+      }
       showFeedback("calc-feedback", false, "<strong>Есть неточности.</strong> " + hint);
     }
   };

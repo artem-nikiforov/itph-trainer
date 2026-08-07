@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Интерактивный тренажёр для менеджеров смены: расчёт ITPH, диагностика смены и выбор управленческого действия.">
   <title>Тренажёр «Работа с ITPH»</title>
-  <link rel="stylesheet" href="css/kuds.css?v=20260720-3">
+  <link rel="stylesheet" href="css/kuds.css?v=20260807-1">
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -100,58 +100,61 @@
           <button class="ku-btn ghost course-back" type="button" onclick="kuNavigate('home')"><svg class="ku-ico"><use href="#i-left"/></svg> К маршруту</button>
           <span class="ku-eyebrow">Тренажёр 1 из 2</span>
           <h1 class="ku-h1">Посчитай ITPH<br>на каждый период</h1>
-          <p class="ku-lead">Для каждого периода раздели позиции в чеках на человеко‑часы и обязательно запиши логику расчёта.</p>
+          <p class="ku-lead">Для каждого периода посчитай ITPH, сопоставь результат с планом и ситуацией в смене. Затем напиши, что это значит и что нужно предпринять.</p>
         </div>
       </section>
       <section class="course-section">
-        <div class="ku-wrap narrow ku-stack l">
+        <div class="ku-wrap ku-stack l">
           <div class="formula-card ku-reveal">
-            <div class="formula-part"><span><strong>Проданные позиции</strong>чеки × позиций в чеке</span></div>
-            <span class="formula-op" aria-label="разделить на">÷</span>
-            <div class="formula-part"><span><strong>Человеко‑часы</strong>люди × часы</span></div>
+            <div class="formula-part"><span><strong>ITPH</strong>позиции за человеко‑час</span></div>
             <span class="formula-op" aria-label="равно">=</span>
-            <div class="formula-part"><span><strong>ITPH</strong>нагрузка на человека</span></div>
+            <div class="formula-part"><span><strong>Проданные позиции</strong>сумма за период</span></div>
+            <span class="formula-op" aria-label="разделить на">÷</span>
+            <div class="formula-part"><span><strong>Человеко‑часы</strong>сотрудники × часы</span></div>
           </div>
 
           <div class="ku-exercise ku-reveal" style="--d:1" data-ku-id="calc-periods">
             <div class="ku-exercise__label"><svg class="ku-ico s"><use href="#i-target"/></svg> Расчёт по периодам</div>
-            <p class="ku-quiz-q__text">Заполни правую колонку. Одной цифры недостаточно — покажи, как ты её получил.</p>
+            <p class="ku-quiz-q__text">Введи ITPH, затем оцени его вместе с планом и сигналом из смены. В правом поле напиши: <strong>что это значит и что нужно предпринять</strong>.</p>
             <div class="ku-space s"></div>
             <div class="ku-scroll-x period-scroll">
               <div class="period-table" role="table" aria-label="Расчёт ITPH по периодам">
                 <div class="period-table__head" role="row">
-                  <div role="columnheader">Позиции в чеках</div>
+                  <div role="columnheader">Период, позиции и сигнал</div>
                   <div role="columnheader">Человеко‑часы</div>
-                  <div role="columnheader">Твой ITPH и логика</div>
+                  <div role="columnheader">ITPH, вывод и действие</div>
                 </div>
-                <div class="period-row" role="row" data-positions="84" data-hours="3.5" data-answer="24">
-                  <div class="period-source" role="cell" data-label="Позиции в чеках"><span class="ku-badge neutral">12:00–12:30</span><strong>84 позиции</strong></div>
-                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>3,5</strong><span>чел.-ч.</span></div>
-                  <div class="period-answer" role="cell" data-label="Твой расчёт">
-                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 12:00–12:30" placeholder="число" data-ku-var="itph-period-1" data-ku-label="ITPH 12:00–12:30"></label>
-                    <label>Логика<textarea class="ku-input period-logic" rows="2" aria-label="Логика расчёта за период 12:00–12:30" placeholder="Например: 84 ÷ 3,5 = …" data-ku-var="itph-logic-1" data-ku-label="Логика расчёта 12:00–12:30"></textarea></label>
+                <div class="period-row" role="row" data-answer="18">
+                  <div class="period-source" role="cell" data-label="Период, позиции и сигнал"><span class="ku-badge neutral">09:00–10:00</span><strong>72 позиции · план ITPH 25</strong><span>Поток ниже прогноза, очереди нет</span></div>
+                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
+                  <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
+                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 09:00–10:00" placeholder="число" data-ku-var="itph-period-1" data-ku-label="ITPH 09:00–10:00"></label>
+                    <label>Что это значит и что предпринять<textarea class="ku-input period-logic" rows="3" aria-label="Вывод и действие за период 09:00–10:00" placeholder="Сравни с планом и предложи первое действие" data-ku-var="itph-logic-1" data-ku-label="Вывод и действие 09:00–10:00"></textarea></label>
                   </div>
+                  <div class="period-reference" role="cell"><strong>Ориентир:</strong> ITPH ниже плана. Проверь динамику: если снижение разовое — дай команде полезные задачи; если повторяется — скорректируй численность или график.</div>
                 </div>
-                <div class="period-row" role="row" data-positions="112" data-hours="4" data-answer="28">
-                  <div class="period-source" role="cell" data-label="Позиции в чеках"><span class="ku-badge neutral">12:30–13:00</span><strong>112 позиций</strong></div>
-                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>4</strong><span>чел.-ч.</span></div>
-                  <div class="period-answer" role="cell" data-label="Твой расчёт">
-                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 12:30–13:00" placeholder="число" data-ku-var="itph-period-2" data-ku-label="ITPH 12:30–13:00"></label>
-                    <label>Логика<textarea class="ku-input period-logic" rows="2" aria-label="Логика расчёта за период 12:30–13:00" placeholder="Например: 112 ÷ 4 = …" data-ku-var="itph-logic-2" data-ku-label="Логика расчёта 12:30–13:00"></textarea></label>
+                <div class="period-row" role="row" data-answer="36">
+                  <div class="period-source" role="cell" data-label="Период, позиции и сигнал"><span class="ku-badge neutral">13:00–14:00</span><strong>144 позиции · план ITPH 28</strong><span>Скорость падает, кухня не успевает</span></div>
+                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
+                  <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
+                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 13:00–14:00" placeholder="число" data-ku-var="itph-period-2" data-ku-label="ITPH 13:00–14:00"></label>
+                    <label>Что это значит и что предпринять<textarea class="ku-input period-logic" rows="3" aria-label="Вывод и действие за период 13:00–14:00" placeholder="Сравни с планом и предложи первое действие" data-ku-var="itph-logic-2" data-ku-label="Вывод и действие 13:00–14:00"></textarea></label>
                   </div>
+                  <div class="period-reference" role="cell"><strong>Ориентир:</strong> ITPH выше плана, а кухня отстаёт — это перегрузка. Встань в зону наблюдения, найди западающую зону и скорректируй расстановку.</div>
                 </div>
-                <div class="period-row" role="row" data-positions="99" data-hours="3" data-answer="33">
-                  <div class="period-source" role="cell" data-label="Позиции в чеках"><span class="ku-badge neutral">13:00–13:30</span><strong>99 позиций</strong></div>
-                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>3</strong><span>чел.-ч.</span></div>
-                  <div class="period-answer" role="cell" data-label="Твой расчёт">
-                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 13:00–13:30" placeholder="число" data-ku-var="itph-period-3" data-ku-label="ITPH 13:00–13:30"></label>
-                    <label>Логика<textarea class="ku-input period-logic" rows="2" aria-label="Логика расчёта за период 13:00–13:30" placeholder="Например: 99 ÷ 3 = …" data-ku-var="itph-logic-3" data-ku-label="Логика расчёта 13:00–13:30"></textarea></label>
+                <div class="period-row" role="row" data-answer="24">
+                  <div class="period-source" role="cell" data-label="Период, позиции и сигнал"><span class="ku-badge neutral">18:00–19:00</span><strong>96 позиций · план ITPH 24</strong><span>Скорость в норме, жалоб на качество стало больше</span></div>
+                  <div class="period-source" role="cell" data-label="Человеко-часы"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
+                  <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
+                    <label>ITPH<input class="ku-input num period-value" type="text" inputmode="decimal" autocomplete="off" aria-label="ITPH за период 18:00–19:00" placeholder="число" data-ku-var="itph-period-3" data-ku-label="ITPH 18:00–19:00"></label>
+                    <label>Что это значит и что предпринять<textarea class="ku-input period-logic" rows="3" aria-label="Вывод и действие за период 18:00–19:00" placeholder="Сравни с планом и предложи первое действие" data-ku-var="itph-logic-3" data-ku-label="Вывод и действие 18:00–19:00"></textarea></label>
                   </div>
+                  <div class="period-reference" role="cell"><strong>Ориентир:</strong> ITPH совпал с планом, но жалобы показывают проблему качества. Проверь приготовление, сборку и соблюдение стандартов, устрани причину и перепроверь.</div>
                 </div>
               </div>
             </div>
             <div class="ku-space s"></div>
-            <button class="ku-btn secondary" type="button" onclick="checkPeriodCalculations()">Проверить расчёты</button>
+            <button class="ku-btn secondary" type="button" onclick="checkPeriodCalculations()">Проверить и сравнить</button>
             <div class="ku-feedback" id="calc-feedback" aria-live="polite"></div>
           </div>
 
@@ -160,7 +163,7 @@
             <div><div class="ku-callout__title">Главное</div><p>Считай позиции, а не чеки. И обязательно дели на все человеко‑часы сотрудников за тот же период.</p></div>
           </div>
           <div class="course-actions">
-            <span class="ku-small ku-soft">Все три расчёта откроют тренажёр по ситуациям.</span>
+            <span class="ku-small ku-soft">Три верных расчёта и осмысленных решения по смене откроют тренажёр по ситуациям.</span>
             <button class="ku-btn primary course-next" id="next-calc" type="button" disabled onclick="kuNavigate('situations')">К ситуациям <svg class="ku-ico arrow"><use href="#i-right"/></svg></button>
           </div>
         </div>
@@ -193,7 +196,7 @@
             <p class="ku-quiz-q__text">Кухня не успевает, ожидание растёт. Что сделать первым?</p>
             <div class="ku-choices">
               <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Подождать ещё один период: высокий ITPH — хороший результат</button>
-              <button class="ku-choice situation-choice" type="button" data-correct="1"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-check"/></svg></span>Поддержать узкое место и скорректировать расстановку</button>
+              <button class="ku-choice situation-choice" type="button" data-correct="1"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-check"/></svg></span>Определить западающую зону и скорректировать расстановку</button>
               <button class="ku-choice situation-choice" type="button" data-correct="0"><span class="ku-choice__marker"><svg class="ku-ico s"><use href="#i-x-c"/></svg></span>Попросить всех просто работать быстрее</button>
             </div>
             <div class="ku-feedback" id="situation-overload-feedback" aria-live="polite"></div>
@@ -259,7 +262,7 @@
           <div class="ku-timeline ku-reveal">
             <div class="ku-tl-item"><span class="ku-tl-item__dot">1</span><h4>Посчитай</h4><p>Проданные позиции ÷ человеко‑часы сотрудников.</p></div>
             <div class="ku-tl-item"><span class="ku-tl-item__dot">2</span><h4>Сопоставь</h4><p>План и факт ITPH + сотрудники и опасные зоны + гостевой опыт.</p></div>
-            <div class="ku-tl-item"><span class="ku-tl-item__dot">3</span><h4>Измени причину</h4><p>Помоги узкому месту, скорректируй расстановку, дай понятную обратную связь.</p></div>
+            <div class="ku-tl-item"><span class="ku-tl-item__dot">3</span><h4>Измени причину</h4><p>Определи западающую зону, скорректируй расстановку, дай понятную обратную связь.</p></div>
             <div class="ku-tl-item"><span class="ku-tl-item__dot">4</span><h4>Перепроверь</h4><p>Через 30 минут снова посмотри на цифру, очередь и качество.</p></div>
           </div>
 
@@ -281,8 +284,8 @@
     </div>
   </main>
 
-  <script src="js/kuds.js?v=20260720-2"></script>
-  <script src="js/ku-scorm.js?v=20260720-2"></script>
-  <script src="js/course.js?v=20260720-2"></script>
+  <script src="js/kuds.js?v=20260807-1"></script>
+  <script src="js/ku-scorm.js?v=20260807-1"></script>
+  <script src="js/course.js?v=20260807-1"></script>
 </body>
 </html>
