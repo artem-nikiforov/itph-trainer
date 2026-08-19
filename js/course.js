@@ -17,13 +17,14 @@
   let state = loadState();
 
   function loadState() {
-    const fresh = { unlocked: 1, done: [false, false, false], situations: [], attempts: {}, completed: false };
+    const fresh = { unlocked: 1, done: [false, false, false], calcAttempts: 0, situations: [], attempts: {}, completed: false };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (!saved) return fresh;
       return {
         unlocked: Math.min(Math.max(Number(saved.unlocked) || 1, 1), chapters.length),
         done: chapters.map((_, index) => Boolean(saved.done && saved.done[index])),
+        calcAttempts: Math.min(Math.max(Number(saved.calcAttempts) || 0, 0), 3),
         situations: Array.isArray(saved.situations) ? saved.situations.filter(id => situationFeedback[id]) : [],
         attempts: Object.fromEntries(
           Object.entries(saved.attempts || {})
@@ -57,6 +58,7 @@
     const situationsNext = document.getElementById("next-situations");
     if (calcNext) calcNext.disabled = !state.done[0];
     if (situationsNext) situationsNext.disabled = !state.done[1];
+    restoreCalculation();
     restoreSituations();
     if (state.completed) showCompleted();
   }
@@ -103,8 +105,17 @@
     return Number(String(value).trim().replace(",", "."));
   }
 
+  function restoreCalculation() {
+    if (!state.done[0] || state.calcAttempts < 3) return;
+    document.querySelectorAll(".period-row").forEach(row => {
+      row.classList.remove("incorrect");
+      row.classList.add("revealed");
+    });
+  }
+
   window.checkPeriodCalculations = function () {
     const rows = [...document.querySelectorAll(".period-row")];
+    const wrongSetups = [];
     let correctRows = 0;
     let hasWrongCalculation = false;
     let hasShortDecision = false;
@@ -117,9 +128,13 @@
       const decisionReady = decision.length >= 20;
       const rowOk = valueOk && decisionReady;
 
+      row.classList.remove("revealed");
       row.classList.toggle("correct", rowOk);
       row.classList.toggle("incorrect", !rowOk);
-      if (!valueOk) hasWrongCalculation = true;
+      if (!valueOk) {
+        hasWrongCalculation = true;
+        wrongSetups.push(row.dataset.setup);
+      }
       if (!decisionReady) hasShortDecision = true;
       if (rowOk) correctRows += 1;
     });
@@ -128,19 +143,44 @@
       showFeedback("calc-feedback", true, "<strong>Все расчёты верны.</strong> Сравни свои выводы с ориентирами в строках. Формулировки не оцениваются автоматически.");
       markExerciseDone("calc-periods");
       unlockAfter("calc");
-    } else {
-      let hint = "";
-      if (hasWrongCalculation && hasShortDecision) {
-        hint = "Проверь деление проданных блюд на человеко‑часы. Затем напиши, что результат значит относительно плана и какое действие предпримешь первым.";
-      } else if (hasWrongCalculation) {
-        hint = "Проверь деление проданных блюд на человеко‑часы в отмеченных строках.";
-      } else {
-        hint = "В каждой отмеченной строке напиши две части: что результат значит относительно плана и какое действие предпримешь первым. Формулировка не оценивается автоматически.";
-      }
-      showFeedback("calc-feedback", false, "<strong>Есть неточности.</strong> " + hint);
+      return;
     }
-  };
 
+    state.calcAttempts = Math.min((Number(state.calcAttempts) || 0) + 1, 3);
+    saveState();
+
+    if (state.calcAttempts >= 3) {
+      rows.forEach(row => {
+        if (!row.classList.contains("correct")) {
+          row.classList.remove("incorrect");
+          row.classList.add("revealed");
+        }
+      });
+      showFeedback(
+        "calc-feedback",
+        true,
+        "<strong>Разбор после трёх попыток.</strong> Правильные расчёты: 72 ÷ 4 = 18; 144 ÷ 4 = 36; 96 ÷ 4 = 24. Ориентиры по решениям открыты в каждой строке — можно идти дальше."
+      );
+      markExerciseDone("calc-periods");
+      unlockAfter("calc");
+      return;
+    }
+
+    const hints = [];
+    if (hasWrongCalculation) {
+      if (state.calcAttempts === 1) {
+        hints.push("Формула: проданные блюда ÷ часы сотрудников за период = ITPH. Проверь отмеченные строки.");
+      } else {
+        hints.push("Подставь данные в формулу так: " + wrongSetups.join("; ") + ". Затем выполни деление.");
+      }
+    }
+    if (hasShortDecision) {
+      hints.push("В отмеченных строках допиши, что результат значит относительно плана и какое действие предпримешь первым. Формулировка не оценивается автоматически.");
+    }
+    const remaining = 3 - state.calcAttempts;
+    const attemptsText = remaining === 1 ? "Осталась 1 попытка." : "Осталось " + remaining + " попытки.";
+    showFeedback("calc-feedback", false, "<strong>Есть неточности.</strong> " + hints.join(" ") + " " + attemptsText);
+  };
   function restoreSituations() {
     document.querySelectorAll("[data-situation]").forEach(card => {
       const solved = state.situations.includes(card.dataset.situation);
