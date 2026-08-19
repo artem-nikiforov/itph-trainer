@@ -140,7 +140,7 @@
     });
 
     if (correctRows === rows.length) {
-      showFeedback("calc-feedback", true, "<strong>Все расчёты верны.</strong> Сравни свои выводы с ориентирами в строках. Формулировки не оцениваются автоматически.");
+      showFeedback("calc-feedback", true, "<strong>Все расчёты верны.</strong> Сравни свои выводы с ориентирами в строках.");
       markExerciseDone("calc-periods");
       unlockAfter("calc");
       return;
@@ -175,7 +175,7 @@
       }
     }
     if (hasShortDecision) {
-      hints.push("В отмеченных строках допиши, что результат значит относительно плана и какое действие предпримешь первым. Формулировка не оценивается автоматически.");
+      hints.push("В отмеченных строках допиши, что результат значит относительно плана и какое действие предпримешь первым.");
     }
     const remaining = 3 - state.calcAttempts;
     const attemptsText = remaining === 1 ? "Осталась 1 попытка." : "Осталось " + remaining + " попытки.";
