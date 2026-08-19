@@ -2,6 +2,29 @@
   "use strict";
 
   const STORAGE_KEY = "ku_itph_trainer_v2";
+  const KU_STORAGE_KEY = "ku::itph-trainer";
+
+  function resetCourseFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") !== "1") return;
+
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(KU_STORAGE_KEY);
+    } catch (error) {}
+
+    document.querySelectorAll("[data-ku-var]").forEach((field) => {
+      if (field.type === "checkbox" || field.type === "radio") field.checked = false;
+      else field.value = "";
+    });
+
+    params.delete("reset");
+    const query = params.toString();
+    const cleanUrl = window.location.pathname + (query ? "?" + query : "") + window.location.hash;
+    try { window.history.replaceState(null, "", cleanUrl); } catch (error) {}
+  }
+
+  resetCourseFromUrl();
   const chapters = ["calc", "situations", "finish"];
   const chapterNames = {
     calc: "Посчитать ITPH по периодам",
