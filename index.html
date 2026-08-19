@@ -117,6 +117,8 @@
             <div class="ku-exercise__label"><svg class="ku-ico s"><use href="#i-target"/></svg> Расчёт по периодам</div>
             <p class="ku-quiz-q__text">Введи ITPH, затем оцени его вместе с планом и сигналом из смены. В правом поле напиши: <strong>что это значит и что нужно предпринять</strong>.</p>
             <div class="ku-space s"></div>
+            <div class="situation-progress calc-progress"><span>Разобрано периодов</span><strong id="calc-period-count">0 / 3</strong></div>
+            <div class="ku-space s"></div>
             <div class="ku-scroll-x period-scroll">
               <div class="period-table" role="table" aria-label="Расчёт ITPH по периодам">
                 <div class="period-table__head" role="row">
@@ -124,7 +126,7 @@
                   <div role="columnheader">Часы сотрудников за период</div>
                   <div role="columnheader">ITPH, вывод и действие</div>
                 </div>
-                <div class="period-row" role="row" data-answer="18" data-setup="72 ÷ 4">
+                <div class="period-row" role="row" data-answer="18" data-setup="72 ÷ 4" data-model="ITPH ниже плана. Проверю динамику: если снижение разовое, дам команде полезные задачи; если повторяется, скорректирую численность или график.">
                   <div class="period-source" role="cell" data-label="Период, блюда и сигнал"><span class="ku-badge neutral">09:00–10:00</span><strong>72 блюда · план ITPH 25</strong><span>Поток ниже прогноза, очереди нет</span></div>
                   <div class="period-source" role="cell" data-label="Часы сотрудников за период"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
                   <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
@@ -133,7 +135,7 @@
                   </div>
                   <div class="period-reference" role="cell"><strong>Ориентир:</strong> ITPH ниже плана. Проверь динамику: если снижение разовое — дай команде полезные задачи; если повторяется — скорректируй численность или график.</div>
                 </div>
-                <div class="period-row" role="row" data-answer="36" data-setup="144 ÷ 4">
+                <div class="period-row" role="row" data-answer="36" data-setup="144 ÷ 4" data-model="ITPH выше плана, кухня отстаёт — это перегрузка. Встану в зону наблюдения, найду западающую зону и скорректирую расстановку.">
                   <div class="period-source" role="cell" data-label="Период, блюда и сигнал"><span class="ku-badge neutral">13:00–14:00</span><strong>144 блюда · план ITPH 28</strong><span>Скорость падает, кухня не успевает</span></div>
                   <div class="period-source" role="cell" data-label="Часы сотрудников за период"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
                   <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
@@ -142,7 +144,7 @@
                   </div>
                   <div class="period-reference" role="cell"><strong>Ориентир:</strong> ITPH выше плана, а кухня отстаёт — это перегрузка. Встань в зону наблюдения, найди западающую зону и скорректируй расстановку.</div>
                 </div>
-                <div class="period-row" role="row" data-answer="24" data-setup="96 ÷ 4">
+                <div class="period-row" role="row" data-answer="24" data-setup="96 ÷ 4" data-model="ITPH совпал с планом, но жалобы указывают на проблему качества. Проверю приготовление, сборку и соблюдение стандартов, устраню причину и перепроверю.">
                   <div class="period-source" role="cell" data-label="Период, блюда и сигнал"><span class="ku-badge neutral">18:00–19:00</span><strong>96 блюд · план ITPH 24</strong><span>Скорость в норме, жалоб на качество стало больше</span></div>
                   <div class="period-source" role="cell" data-label="Часы сотрудников за период"><strong>4</strong><span>4 сотрудника × 1 час</span></div>
                   <div class="period-answer" role="cell" data-label="ITPH, вывод и действие">
@@ -154,7 +156,7 @@
               </div>
             </div>
             <div class="ku-space s"></div>
-            <button class="ku-btn secondary" type="button" onclick="checkPeriodCalculations()">Проверить и сравнить</button>
+            <button class="ku-btn secondary" id="check-calc" type="button" onclick="checkPeriodCalculations()">Проверить период</button>
             <div class="ku-feedback" id="calc-feedback" aria-live="polite"></div>
           </div>
 
@@ -163,7 +165,7 @@
             <div><div class="ku-callout__title">Главное</div><p>Считай проданные блюда, а не чеки. Делить нужно на часы всех сотрудников за нужный период.</p></div>
           </div>
           <div class="course-actions">
-            <span class="ku-small ku-soft">Верные расчёты или разбор после трёх попыток откроют тренажёр по ситуациям.</span>
+            <span class="ku-small ku-soft">Периоды открываются по очереди. После третьего откроется тренажёр по ситуациям.</span>
             <button class="ku-btn primary course-next" id="next-calc" type="button" disabled onclick="kuNavigate('situations')">К ситуациям <svg class="ku-ico arrow"><use href="#i-right"/></svg></button>
           </div>
         </div>
@@ -286,6 +288,6 @@
 
   <script src="js/kuds.js?v=20260807-1"></script>
   <script src="js/ku-scorm.js?v=20260807-1"></script>
-  <script src="js/course.js?v=20260819-3"></script>
+  <script src="js/course.js?v=20260819-4"></script>
 </body>
 </html>

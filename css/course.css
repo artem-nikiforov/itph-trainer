@@ -91,6 +91,8 @@ body { min-height: 100vh; background: var(--ku-bg); }
 .period-table__head > div + div,
 .period-row > div + div { border-left: var(--ku-border-w) solid var(--ku-border-soft); }
 .period-row { border-top: var(--ku-border-w) solid var(--ku-border-soft); transition: background-color var(--ku-dur-fast) var(--ku-ease); }
+.period-row.is-locked,
+.situation-card.is-locked { display: none; }
 .period-row.correct { background: var(--ku-success-soft); }
 .period-row.incorrect { background: var(--ku-danger-soft); }
 .period-row.revealed { background: var(--ku-warning-soft); }

@@ -17,14 +17,35 @@
   let state = loadState();
 
   function loadState() {
-    const fresh = { unlocked: 1, done: [false, false, false], calcAttempts: 0, situations: [], attempts: {}, completed: false };
+    const fresh = {
+      unlocked: 1,
+      done: [false, false, false],
+      calcRows: [],
+      calcRevealed: [],
+      calcRowAttempts: {},
+      situations: [],
+      attempts: {},
+      completed: false
+    };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (!saved) return fresh;
+      const done = chapters.map((_, index) => Boolean(saved.done && saved.done[index]));
+      const savedCalcRows = Array.isArray(saved.calcRows)
+        ? [...new Set(saved.calcRows.map(Number).filter(index => index >= 0 && index < 3))]
+        : [];
       return {
         unlocked: Math.min(Math.max(Number(saved.unlocked) || 1, 1), chapters.length),
-        done: chapters.map((_, index) => Boolean(saved.done && saved.done[index])),
-        calcAttempts: Math.min(Math.max(Number(saved.calcAttempts) || 0, 0), 3),
+        done,
+        calcRows: savedCalcRows.length ? savedCalcRows : (done[0] ? [0, 1, 2] : []),
+        calcRevealed: Array.isArray(saved.calcRevealed)
+          ? [...new Set(saved.calcRevealed.map(Number).filter(index => index >= 0 && index < 3))]
+          : (Number(saved.calcAttempts) >= 3 ? [0, 1, 2] : []),
+        calcRowAttempts: Object.fromEntries(
+          Object.entries(saved.calcRowAttempts || {})
+            .filter(([index]) => ["0", "1", "2"].includes(String(index)))
+            .map(([index, count]) => [index, Math.min(Math.max(Number(count) || 0, 0), 3)])
+        ),
         situations: Array.isArray(saved.situations) ? saved.situations.filter(id => situationFeedback[id]) : [],
         attempts: Object.fromEntries(
           Object.entries(saved.attempts || {})
@@ -37,7 +58,6 @@
       return fresh;
     }
   }
-
   function saveState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {}
   }
@@ -105,96 +125,138 @@
     return Number(String(value).trim().replace(",", "."));
   }
 
+  function setPeriodFieldsLocked(row, locked) {
+    row.querySelector(".period-value").readOnly = locked;
+    row.querySelector(".period-logic").readOnly = locked;
+  }
+
+  function setSavedFieldValue(field, value) {
+    if (field.value === value) return;
+    field.value = value;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  function revealPeriodAnswer(row) {
+    setSavedFieldValue(row.querySelector(".period-value"), String(row.dataset.answer));
+    setSavedFieldValue(row.querySelector(".period-logic"), row.dataset.model);
+    setPeriodFieldsLocked(row, true);
+  }
+
   function restoreCalculation() {
-    if (!state.done[0] || state.calcAttempts < 3) return;
-    document.querySelectorAll(".period-row").forEach(row => {
+    const rows = [...document.querySelectorAll(".period-row")];
+    const currentIndex = rows.findIndex((_, index) => !state.calcRows.includes(index));
+
+    rows.forEach((row, index) => {
+      const completed = state.calcRows.includes(index);
+      const revealed = state.calcRevealed.includes(index);
+      const locked = !completed && index !== currentIndex;
+
+      row.classList.toggle("is-locked", locked);
+      row.classList.toggle("correct", completed && !revealed);
+      row.classList.toggle("revealed", revealed);
       row.classList.remove("incorrect");
-      row.classList.add("revealed");
+      setPeriodFieldsLocked(row, completed || locked);
+      if (revealed) revealPeriodAnswer(row);
     });
+
+    const counter = document.getElementById("calc-period-count");
+    if (counter) counter.textContent = state.calcRows.length + " / 3";
+    const checkButton = document.getElementById("check-calc");
+    if (checkButton) {
+      checkButton.disabled = currentIndex < 0;
+      checkButton.textContent = currentIndex < 0 ? "Все периоды разобраны" : "Проверить период";
+    }
+  }
+
+  function resolvePeriod(row, index, revealed) {
+    if (!state.calcRows.includes(index)) state.calcRows.push(index);
+    state.calcRows.sort((a, b) => a - b);
+    if (revealed && !state.calcRevealed.includes(index)) state.calcRevealed.push(index);
+    setPeriodFieldsLocked(row, true);
+    const allDone = state.calcRows.length === 3;
+    if (allDone) {
+      markExerciseDone("calc-periods");
+      unlockAfter("calc");
+    } else {
+      saveState();
+      syncUi();
+    }
+    return allDone;
   }
 
   window.checkPeriodCalculations = function () {
     const rows = [...document.querySelectorAll(".period-row")];
-    const wrongSetups = [];
-    let correctRows = 0;
-    let hasWrongCalculation = false;
-    let hasShortDecision = false;
+    const currentIndex = rows.findIndex((_, index) => !state.calcRows.includes(index));
+    if (currentIndex < 0) return;
 
-    rows.forEach(row => {
-      const answer = Number(row.dataset.answer);
-      const value = parseNumber(row.querySelector(".period-value").value);
-      const decision = row.querySelector(".period-logic").value.trim();
-      const valueOk = Number.isFinite(value) && Math.abs(value - answer) < 0.01;
-      const decisionReady = decision.length >= 20;
-      const rowOk = valueOk && decisionReady;
+    const row = rows[currentIndex];
+    const answer = Number(row.dataset.answer);
+    const value = parseNumber(row.querySelector(".period-value").value);
+    const decision = row.querySelector(".period-logic").value.trim();
+    const valueOk = Number.isFinite(value) && Math.abs(value - answer) < 0.01;
+    const decisionReady = decision.length >= 20;
 
-      row.classList.remove("revealed");
-      row.classList.toggle("correct", rowOk);
-      row.classList.toggle("incorrect", !rowOk);
-      if (!valueOk) {
-        hasWrongCalculation = true;
-        wrongSetups.push(row.dataset.setup);
-      }
-      if (!decisionReady) hasShortDecision = true;
-      if (rowOk) correctRows += 1;
-    });
+    row.classList.toggle("correct", valueOk && decisionReady);
+    row.classList.toggle("incorrect", !valueOk || !decisionReady);
 
-    if (correctRows === rows.length) {
-      showFeedback("calc-feedback", true, "<strong>Все расчёты верны.</strong> Сравни свои выводы с ориентирами в строках.");
-      markExerciseDone("calc-periods");
-      unlockAfter("calc");
-      return;
-    }
-
-    state.calcAttempts = Math.min((Number(state.calcAttempts) || 0) + 1, 3);
-    saveState();
-
-    if (state.calcAttempts >= 3) {
-      rows.forEach(row => {
-        if (!row.classList.contains("correct")) {
-          row.classList.remove("incorrect");
-          row.classList.add("revealed");
-        }
-      });
+    if (valueOk && decisionReady) {
+      const allDone = resolvePeriod(row, currentIndex, false);
       showFeedback(
         "calc-feedback",
         true,
-        "<strong>Разбор после трёх попыток.</strong> Правильные расчёты: 72 ÷ 4 = 18; 144 ÷ 4 = 36; 96 ÷ 4 = 24. Ориентиры по решениям открыты в каждой строке — можно идти дальше."
+        allDone
+          ? "<strong>Все три периода разобраны.</strong> Можно переходить к ситуациям."
+          : "<strong>Верно.</strong> Сравни свой вывод с ориентиром в строке. Следующий период открыт."
       );
-      markExerciseDone("calc-periods");
-      unlockAfter("calc");
+      return;
+    }
+
+    const attemptKey = String(currentIndex);
+    const attempts = Math.min((Number(state.calcRowAttempts[attemptKey]) || 0) + 1, 3);
+    state.calcRowAttempts[attemptKey] = attempts;
+    saveState();
+
+    if (attempts >= 3) {
+      const allDone = resolvePeriod(row, currentIndex, true);
+      showFeedback(
+        "calc-feedback",
+        true,
+        "<strong>Разбор после трёх попыток.</strong> " + row.dataset.setup + " = " + row.dataset.answer + ". Эталонный расчёт и решение подставлены в поля. " + (allDone ? "Можно переходить к ситуациям." : "Следующий период открыт.")
+      );
       return;
     }
 
     const hints = [];
-    if (hasWrongCalculation) {
-      if (state.calcAttempts === 1) {
-        hints.push("Формула: проданные блюда ÷ часы сотрудников за период = ITPH. Проверь отмеченные строки.");
-      } else {
-        hints.push("Подставь данные в формулу так: " + wrongSetups.join("; ") + ". Затем выполни деление.");
-      }
+    if (!valueOk) {
+      hints.push(
+        attempts === 1
+          ? "Формула: проданные блюда ÷ часы сотрудников за период = ITPH."
+          : "Подставь данные так: " + row.dataset.setup + ". Затем выполни деление."
+      );
     }
-    if (hasShortDecision) {
-      hints.push("В отмеченных строках допиши, что результат значит относительно плана и какое действие предпримешь первым.");
+    if (!decisionReady) {
+      hints.push("Допиши, что результат значит относительно плана и какое действие предпримешь первым.");
     }
-    const remaining = 3 - state.calcAttempts;
+    const remaining = 3 - attempts;
     const attemptsText = remaining === 1 ? "Осталась 1 попытка." : "Осталось " + remaining + " попытки.";
     showFeedback("calc-feedback", false, "<strong>Есть неточности.</strong> " + hints.join(" ") + " " + attemptsText);
-  };
-  function restoreSituations() {
-    document.querySelectorAll("[data-situation]").forEach(card => {
+  };  function restoreSituations() {
+    const cards = [...document.querySelectorAll("[data-situation]")];
+    const currentIndex = cards.findIndex(card => !state.situations.includes(card.dataset.situation));
+
+    cards.forEach((card, index) => {
       const solved = state.situations.includes(card.dataset.situation);
+      const locked = !solved && index !== currentIndex;
       card.classList.toggle("solved", solved);
-      if (!solved) return;
+      card.classList.toggle("is-locked", locked);
       card.querySelectorAll(".situation-choice").forEach(button => {
-        button.disabled = true;
-        button.classList.toggle("correct", button.dataset.correct === "1");
+        button.disabled = solved || locked;
+        button.classList.toggle("correct", solved && button.dataset.correct === "1");
       });
     });
     const counter = document.getElementById("situations-count");
     if (counter) counter.textContent = state.situations.length + " / 3";
   }
-
   function resolveSituation(card, id, feedbackId, message) {
     if (!state.situations.includes(id)) state.situations.push(id);
     card.classList.add("solved");
