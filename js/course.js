@@ -9,15 +9,15 @@
     finish: "Забрать алгоритм"
   };
   const situationFeedback = {
-    overload: "<strong>Верно.</strong> Высокий ITPH вместе с очередью и отставанием кухни указывает на перегрузку. Определи западающую зону и скорректируй расстановку.",
-    underload: "<strong>Верно.</strong> Нагрузка ниже плана и очереди нет. Перераспредели людей и используй освободившееся время с пользой.",
-    quality: "<strong>Верно.</strong> Нормальный ITPH не исключает проблем с качеством. Проверь процесс приготовления, сборки и соблюдение стандартов."
+    overload: "Высокий ITPH вместе с очередью и отставанием кухни указывает на перегрузку. Определи западающую зону и скорректируй расстановку.",
+    underload: "Нагрузка ниже плана и очереди нет. Перераспредели людей и используй освободившееся время с пользой.",
+    quality: "Нормальный ITPH не исключает проблем с качеством. Проверь процесс приготовления, сборки и соблюдение стандартов."
   };
   const originalNavigate = window.kuNavigate;
   let state = loadState();
 
   function loadState() {
-    const fresh = { unlocked: 1, done: [false, false, false], situations: [], completed: false };
+    const fresh = { unlocked: 1, done: [false, false, false], situations: [], attempts: {}, completed: false };
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (!saved) return fresh;
@@ -25,6 +25,11 @@
         unlocked: Math.min(Math.max(Number(saved.unlocked) || 1, 1), chapters.length),
         done: chapters.map((_, index) => Boolean(saved.done && saved.done[index])),
         situations: Array.isArray(saved.situations) ? saved.situations.filter(id => situationFeedback[id]) : [],
+        attempts: Object.fromEntries(
+          Object.entries(saved.attempts || {})
+            .filter(([id]) => situationFeedback[id])
+            .map(([id, count]) => [id, Math.min(Math.max(Number(count) || 0, 0), 3)])
+        ),
         completed: Boolean(saved.completed)
       };
     } catch (error) {
@@ -150,25 +155,15 @@
     if (counter) counter.textContent = state.situations.length + " / 3";
   }
 
-  function answerSituation(button) {
-    const card = button.closest("[data-situation]");
-    if (!card || card.classList.contains("solved")) return;
-    const id = card.dataset.situation;
-    const feedbackId = "situation-" + id + "-feedback";
-
-    if (button.dataset.correct !== "1") {
-      button.classList.add("wrong");
-      setTimeout(() => button.classList.remove("wrong"), 500);
-      showFeedback(feedbackId, false, "<strong>Не совсем.</strong> Сопоставь факт с планом, а затем посмотри, что происходит с командой, опасными зонами и Гостями.");
-      return;
-    }
-
+  function resolveSituation(card, id, feedbackId, message) {
     if (!state.situations.includes(id)) state.situations.push(id);
     card.classList.add("solved");
-    card.querySelectorAll(".situation-choice").forEach(choice => choice.disabled = true);
-    button.classList.add("correct");
+    card.querySelectorAll(".situation-choice").forEach(choice => {
+      choice.disabled = true;
+      choice.classList.toggle("correct", choice.dataset.correct === "1");
+    });
     markExerciseDone("situation-" + id);
-    showFeedback(feedbackId, true, situationFeedback[id]);
+    showFeedback(feedbackId, true, message);
     if (state.situations.length === 3) unlockAfter("situations");
     else {
       saveState();
@@ -176,6 +171,41 @@
     }
   }
 
+  function answerSituation(button) {
+    const card = button.closest("[data-situation]");
+    if (!card || card.classList.contains("solved")) return;
+    const id = card.dataset.situation;
+    const feedbackId = "situation-" + id + "-feedback";
+
+    if (button.dataset.correct !== "1") {
+      const attempts = Math.min((Number(state.attempts[id]) || 0) + 1, 3);
+      state.attempts[id] = attempts;
+      saveState();
+      button.classList.add("wrong");
+      setTimeout(() => button.classList.remove("wrong"), 500);
+
+      if (attempts >= 3) {
+        resolveSituation(
+          card,
+          id,
+          feedbackId,
+          "<strong>Разбор после трёх попыток.</strong> " + situationFeedback[id] + " Правильный вариант отмечен — можно идти дальше."
+        );
+        return;
+      }
+
+      const remaining = 3 - attempts;
+      const attemptsText = remaining === 1 ? "Осталась 1 попытка." : "Осталось " + remaining + " попытки.";
+      showFeedback(
+        feedbackId,
+        false,
+        "<strong>Не совсем.</strong> Сопоставь факт с планом, а затем посмотри, что происходит с командой, опасными зонами и Гостями. " + attemptsText
+      );
+      return;
+    }
+
+    resolveSituation(card, id, feedbackId, "<strong>Верно.</strong> " + situationFeedback[id]);
+  }
   function showCompleted() {
     const button = document.getElementById("complete-course");
     const message = document.getElementById("complete-state");
