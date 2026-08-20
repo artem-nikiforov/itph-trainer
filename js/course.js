@@ -348,6 +348,31 @@
     syncUi();
   };
 
+  function closeCourseWindow() {
+    window.setTimeout(function () {
+      let target = window;
+      try {
+        if (window.top && window.top !== window) target = window.top;
+        target.close();
+      } catch (error) {
+        try { window.close(); } catch (closeError) {}
+      }
+
+      window.setTimeout(function () {
+        try {
+          if (target.closed) return;
+        } catch (error) {}
+        const message = document.getElementById("complete-state");
+        if (message) {
+          message.textContent = "Курс завершён. Теперь можно закрыть это окно.";
+          message.classList.add("show");
+        }
+      }, 500);
+    }, 350);
+  }
+
+  document.addEventListener("ku:completed", closeCourseWindow);
+
   document.addEventListener("click", function (event) {
     const choice = event.target.closest(".situation-choice");
     if (choice && !choice.disabled) answerSituation(choice);
