@@ -14,7 +14,6 @@ body { min-height: 100vh; background: var(--ku-bg); }
 }
 .course-cover .ku-wrap { width: 100%; }
 .course-cover-copy { max-width: var(--ku-measure); }
-.course-cover-tags { display: flex; flex-wrap: wrap; gap: var(--ku-space-2xs); }
 .course-cover-meta { display: flex; flex-wrap: wrap; gap: var(--ku-space-xs) var(--ku-space-m); color: var(--ku-text-soft); }
 .course-cover-meta span { display: inline-flex; align-items: center; gap: var(--ku-space-3xs); }
 
