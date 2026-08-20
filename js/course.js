@@ -4,19 +4,37 @@
   const STORAGE_KEY = "ku_itph_trainer_v2";
   const KU_STORAGE_KEY = "ku::itph-trainer";
 
-  function resetCourseFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("reset") !== "1") return;
-
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(KU_STORAGE_KEY);
-    } catch (error) {}
-
+  function clearVariableFields() {
     document.querySelectorAll("[data-ku-var]").forEach((field) => {
       if (field.type === "checkbox" || field.type === "radio") field.checked = false;
       else field.value = "";
     });
+  }
+
+  function clearCourseStorage() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(KU_STORAGE_KEY);
+    } catch (error) {}
+  }
+
+  function savedRunIsCompleted() {
+    try {
+      return [STORAGE_KEY, KU_STORAGE_KEY].some((key) => {
+        const saved = JSON.parse(localStorage.getItem(key) || "null");
+        return Boolean(saved && saved.completed);
+      });
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function resetCourseFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") !== "1") return;
+
+    clearCourseStorage();
+    clearVariableFields();
 
     params.delete("reset");
     const query = params.toString();
@@ -24,6 +42,10 @@
     try { window.history.replaceState(null, "", cleanUrl); } catch (error) {}
   }
 
+  if (savedRunIsCompleted()) {
+    clearCourseStorage();
+    clearVariableFields();
+  }
   resetCourseFromUrl();
   const chapters = ["calc", "situations", "finish"];
   const chapterNames = {
@@ -347,6 +369,30 @@
     saveState();
     syncUi();
   };
+
+  function resetCompletedRunFromScorm(event) {
+    const runtimeState = event.detail;
+    if (!runtimeState || !runtimeState.completed) return;
+
+    runtimeState.unlocked = 1;
+    runtimeState.done = {};
+    runtimeState.vars = {};
+    runtimeState.completed = false;
+    clearCourseStorage();
+    clearVariableFields();
+    document.querySelectorAll("[data-ku-id]").forEach((exercise) => {
+      exercise.classList.remove("is-done");
+    });
+    document.querySelectorAll("[data-ku-complete]").forEach((button) => {
+      button.classList.remove("is-completed");
+    });
+
+    state = loadState();
+    if (window.KU && window.KU.save) window.KU.save();
+    syncUi();
+  }
+
+  document.addEventListener("ku:ready", resetCompletedRunFromScorm);
 
   function closeCourseWindow() {
     window.setTimeout(function () {
